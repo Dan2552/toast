@@ -87,8 +87,13 @@ class Toast::CollectionRequest
         return response :internal_server_error,
                         msg: "exception raised in allow block: `#{error.orig_error.message}' in #{error.source_location}"
       rescue => error
+        root = if defined?(Rails)
+          Rails.root
+        else
+          Bundler.root
+        end
         response :internal_server_error,
-                 msg: "exception from via_get handler in: #{error.backtrace.first.sub(Rails.root.to_s+'/', '')}: #{error.message}"
+                 msg: "exception from via_get handler in: #{error.backtrace.first.sub(root.to_s+'/', '')}: #{error.message}"
       end
     end
   end
@@ -147,8 +152,13 @@ class Toast::CollectionRequest
         return response :internal_server_error,
                         msg: "exception raised in allow block: `#{error.orig_error.message}' in #{error.source_location}"
       rescue => error
+        root = if defined?(Rails)
+          Rails.root
+        else
+          Bundler.root
+        end
         response :internal_server_error,
-                 msg: "exception from via_post handler in: #{error.backtrace.first.sub(Rails.root.to_s+'/', '')}: #{error.message}"
+                 msg: "exception from via_post handler in: #{error.backtrace.first.sub(root.to_s+'/', '')}: #{error.message}"
 
       end
     end

@@ -58,7 +58,7 @@ module Toast
   end
 
   def self.info str
-    if Rails.const_defined?('Server') # only on console server
+    if defined?(Rails) && Rails.const_defined?('Server') # only on console server
       puts Toast::Sym+'  Toast: '+str
     end
   end
@@ -75,7 +75,13 @@ module Toast
   end
 
   def self.logger
-    @@logger ||= Logger.new("#{Rails.root}/log/toast.log")
+    root = if defined?(Rails)
+      Rails.root
+    else
+      Bundler.root
+    end
+
+    @@logger ||= Logger.new("#{root}/log/toast.log")
   end
 
   # get the  representation (as Hash) by instance (w/o request)

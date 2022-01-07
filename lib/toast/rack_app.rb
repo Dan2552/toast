@@ -34,7 +34,8 @@ class Toast::RackApp
       return response :unauthorized, msg: "authentication failed: `#{error.message}'"
     end
 
-    path       = request.path_parameters[:toast_path].split('/')
+    request.path_parameters[:toast_path] ||= request.path.sub(/^\//, "")
+    path = request.path_parameters[:toast_path].split('/')
 
     # look up requested model
     model_class = resolve_model(path, Toast.path_tree)
@@ -64,8 +65,8 @@ class Toast::RackApp
                                         request)
         end
       when 2 # canonical, single or collection: /apples/10 , /apples/first, /apples/red_ones
-        if path.second =~ /\A\d+\z/
-          Toast::CanonicalRequest.new( path.second.to_i,
+        if path.second =~ /\A\d+\z/ || path.second =~ /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
+          Toast::CanonicalRequest.new( path.second,
                                        base_config,
                                        auth,
                                        request )
@@ -128,7 +129,7 @@ class Toast::RackApp
         # dig deeper
         resolve_model(path[1..-1], path_tree[ path.first ])
       else
-        path_tree[ path.first ]
+        path_tree[ path.first ] || path_tree[ path[0..1].join("/") ]
       end
     end
 end

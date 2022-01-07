@@ -26,7 +26,7 @@ class Toast::ConfigDSL::Base
       # register base path with 'under' prefix
       to_path_tree = lambda do |path|
         if path.empty?
-          { model_class.to_s.underscore.pluralize => model_class }
+          { model_class.to_s.underscore.pluralize.gsub("/", "::") => model_class }
         else
           { path.first => to_path_tree.call(path[1..-1]) }
         end

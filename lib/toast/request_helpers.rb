@@ -92,7 +92,9 @@ module Toast::RequestHelpers
   def response status_sym, headers: {}, msg: nil, body: nil
     Toast.logger.info "done: #{msg}"
 
-    unless Rails.env == 'production'
+    environment = defined?(Rails) ? Rails.env : ENV["RACK_ENV"]
+
+    unless environment == 'production'
       # put message in body, too, if body is free
       body = msg if body.blank?
     end
